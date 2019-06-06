@@ -35,7 +35,13 @@
   <main>
     <div class="main-container">
       <p>
-        <time id="time">--</time>
+        <output id="date">--</output>
+      </p>
+      <p>
+        <output id="time">--</output>
+      </p>
+      <p>
+        <output id="unixtimestamp">--</output>
       </p>
     </div>
   </main>
@@ -47,11 +53,15 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/locale/ja.js"></script>
   <script>
+  var $date = document.querySelector('#date')
   var $time = document.querySelector('#time')
+  var $unixtimestamp = document.querySelector('#unixtimestamp')
 
   var setNow = function() {
     var _moment = moment()
-    $time.innerHTML = _moment.format('YYYY-MM-DDHH:mm:ss')
+    $date.innerHTML = _moment.format('YYYY-MM-DD')
+    $time.innerHTML = _moment.format('HH:mm:ss')
+    $unixtimestamp.innerHTML = _moment.unix()
   };
 
   ;(function() {
