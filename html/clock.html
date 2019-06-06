@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Clock</title>
+  <style>
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 16px;
+    background-color: #333333;
+    color: #eeeeee;
+  }
+  main {
+    display: block;
+  }
+  .main-container {
+    width: 100%;
+    text-align: center;
+  }
+  .main-container > p {
+    font-size: 6rem;
+    word-wrap: break-word;
+    word-break: break-all;
+  }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <p>Clock</p>
+    </div>
+  </header>
+  <main>
+    <div class="main-container">
+      <p>
+        <time id="time">--</time>
+      </p>
+    </div>
+  </main>
+  <footer>
+    <div>
+      &nbsp;
+    </div>
+  </footer>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/locale/ja.js"></script>
+  <script>
+  var $time = document.querySelector('#time')
+
+  var setNow = function() {
+    var _moment = moment()
+    $time.innerHTML = _moment.format('YYYY-MM-DDHH:mm:ss')
+  };
+
+  ;(function() {
+    setInterval(setNow, 1000)
+  }());
+  </script>
+</body>
+</html>
