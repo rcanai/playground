@@ -20,9 +20,14 @@
     text-align: center;
   }
   .main-container > p {
-    font-size: 6rem;
     word-wrap: break-word;
     word-break: break-all;
+  }
+  .text-L {
+    font-size: 3rem;
+  }
+  .text-XL {
+    font-size: 6rem;
   }
   </style>
 </head>
@@ -34,13 +39,13 @@
   </header>
   <main>
     <div class="main-container">
-      <p>
+      <p class="text-L">
         <output id="date">--</output>
       </p>
-      <p>
+      <p class="text-XL">
         <output id="time">--</output>
       </p>
-      <p>
+      <p class="text-XL">
         <output id="unixtimestamp">--</output>
       </p>
     </div>
@@ -59,12 +64,13 @@
 
   var setNow = function() {
     var _moment = moment()
-    $date.innerHTML = _moment.format('YYYY-MM-DD')
     $time.innerHTML = _moment.format('HH:mm:ss')
     $unixtimestamp.innerHTML = _moment.unix()
+    $date.innerHTML = _moment.locale('en').format('ddd DD MMM YYYY')
   };
 
   ;(function() {
+    setNow()
     setInterval(setNow, 1000)
   }());
   </script>
