@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>経過日数計算</title>
+  <style>
+  .header-container,
+  .main-container,
+  .footer-container {
+    width: 500px;
+    max-width: 98%;
+    margin: 0 auto;
+  }
+  .items {
+    margin: 0;
+    padding: 1rem;
+  }
+  .items .item {
+    display: flex;
+    flex-flow: row nowrap;
+  }
+  .items .item:nth-child(odd) {
+    background-color: #eeeeee;
+  }
+  .items .item.is-today {
+    background-color: #eeee00;
+  }
+  .item-date {
+    min-width: 12rem;
+  }
+  .item-date.date-red {
+    color: #ee3333;
+  }
+  .item-date.date-blue {
+    color: #3333dd;
+  }
+  .item-diff-days {
+    min-width: 4rem;
+  }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <header>
+      <div class="header-container">
+        <p>経過日数計算</p>
+      </div>
+    </header>
+    <main>
+      <div class="main-container">
+        <section>
+          <div>
+            <select v-model="year" @change="changeValue">
+              <option value=""></option>
+              <option v-for="y in years" :value="y">{{ y }}</option>
+            </select>
+            年
+            <select v-model="month" @change="changeValue">
+              <option value=""></option>
+              <option v-for="m in months" :value="m">{{ m }}</option>
+            </select>
+            月
+            <select v-model="day" @change="changeValue">
+              <option value=""></option>
+              <option v-for="d in days" :value="d">{{ d }}</option>
+            </select>
+            日
+          </div>
+        </section>
+        <section>
+          <ul class="items">
+            <li
+              v-for="item in items"
+              class="item"
+              :class="{
+                'is-today': item.date === today
+              }">
+              <div
+                class="item-date"
+                :class="{
+                  'date-red': item.weekNumber === 0,
+                  'date-blue': item.weekNumber === 6,
+                }"
+              >
+                {{ item.str }}({{ item.weekStr }})
+              </div>
+              <div class="item-diff-days">{{ item.diffDays }}日</div>
+              <div class="item-diff-months">{{ item.diffMonths }}ヶ月</div>
+            </li>
+          </ul>
+        </section>
+      </div>
+    </main>
+    <footer>
+      <div class="footer-container">
+        <small>
+          &copy; 2019 rcanai
+        </small>
+      </div>
+    </footer>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/moment@2.24.0/moment.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+  <script>
+    var app = new Vue({
+      el: '#app',
+      data() {
+        var date = localStorage.getItem('selectedDate')
+        var _moment = moment(date || undefined)
+        return  {
+          today: moment().format('YYYY-MM-DD'),
+          year: _moment.year(),
+          month: _moment.month() + 1,
+          day: _moment.date(),
+          date: _moment.format('YYYY-MM-DD')
+        }
+      },
+      computed: {
+        years () {
+          var now = moment()
+          var startYear = now.year() - 30
+          return [...Array(40)].map((_, i) => startYear + i)
+        },
+        months () {
+          return [...Array(12)].map((_, i) => i + 1)
+        },
+        days () {
+          return [...Array(31)].map((_, i) => i + 1)
+        },
+        items () {
+          var _date = moment(this.date)
+          var _moment = moment(this.date)
+          var days = []
+          for (var i = 0; i < 365; i++) {
+            var e = Number(_moment.format('e'))
+            days.push({
+              date: _moment.format('YYYY-MM-DD'),
+              str: _moment.format('YYYY年MM月DD日'),
+              weekNumber: e,
+              weekStr: this.weekStr(e),
+              diffMonths: _moment.diff(_date, 'months'),
+              diffDays: _moment.diff(_date, 'days'),
+            })
+            _moment.add(1, 'days')
+          }
+          return days
+        }
+      },
+      methods: {
+        changeValue () {
+          const _moment = moment()
+          if (this.year) _moment.year(this.year)
+          if (this.month) _moment.month(this.month - 1)
+          if (this.day) _moment.date(this.day)
+          if (_moment.isValid()) {
+            this.date = _moment.format('YYYY-MM-DD')
+            localStorage.setItem('selectedDate', this.date)
+          }
+        },
+        weekStr (weekNumber) {
+          return ['日', '月', '火', '水', '木', '金', '土'][weekNumber]
+        }
+      }
+    })
+  </script>
+</body>
+</html>
