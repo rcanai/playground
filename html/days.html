@@ -100,6 +100,10 @@
                 >
                   {{ week }}
                 </div>
+                <div v-for="wsd in month.weekStartDiff" class="day">
+                  <div class="day-day">&nbsp;</div>
+                  <div class="day-diff">&nbsp;</div>
+                </div>
                 <div
                   v-for="day in month.days"
                   :key="day.date"
@@ -111,9 +115,14 @@
                 >
                   <div class="day-day">{{ day.day }}</div>
                   <div class="day-diff" v-if="items[day.date]">
-                    <p>{{ items[day.date].diffDays }}日</p>
-                    <p>{{ items[day.date].diffMonths }}ヶ月</p>
+                    <p v-if="items[day.date]">{{ items[day.date].diffDays }}日</p>
+                    <p v-if="items[day.date]">{{ items[day.date].diffMonths }}ヶ月</p>
                   </div>
+                  <div class="day-diff" v-else>&nbsp;</div>
+                </div>
+                <div v-for="wsd in month.weekEndDiff" class="day">
+                  <div class="day-day">&nbsp;</div>
+                  <div class="day-diff">&nbsp;</div>
                 </div>
               </div>
             </div>
@@ -213,6 +222,8 @@
               calendar[ym] = {
                 str: _date.format('YYYY年 MM月'),
                 month: Number(_date.month() + 1),
+                weekStartDiff: Number(_date.format('e')), // 各月の開始曜日
+                weekEndDiff: 6 - Number(_date.clone().endOf('month').format('e')), // 各月の開始曜日
                 days: [],
               }
             }
@@ -243,7 +254,6 @@
           return this.weeks[weekNumber]
         },
         setQuery () {
-          console.dir(window.history);
           window.history.replaceState(null, null, '?date=' + this.date);
         }
       },
