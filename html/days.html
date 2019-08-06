@@ -13,32 +13,45 @@
     max-width: 98%;
     margin: 0 auto;
   }
-  .items {
+
+  * {
+    box-sizing: border-box;
+  }
+  p {
     margin: 0;
-    padding: 1rem;
   }
-  .items .item {
+  .w100 {
+    min-width: 100%;
+    width: 100%;
+  }
+  .calendar {
     display: flex;
-    flex-flow: row nowrap;
-    padding: 0.25rem;
+    flex-flow: row wrap;
   }
-  .items .item:nth-child(odd) {
-    background-color: #eeeeee;
+  .month {
+    display: flex;
+    flex-flow: row wrap;
+    max-width: 500px;
+    margin: 1rem;
   }
-  .items .item.is-today {
-    background-color: #eeee00;
+  .week {
+    font-weight: bold;
   }
-  .item-date {
-    min-width: 12rem;
+  .day {
+    width: calc(98% / 7);
+    border: 1px solid #eeeeee;
+    text-align: center;
   }
-  .item-date.date-red {
-    color: #ee3333;
+  .day.is-today {
+    border: 2px solid #cccc00;
   }
-  .item-date.date-blue {
-    color: #3333dd;
+  .day-day {
+    border-bottom: 1px solid #eeeeee;
+    font-weight: bold;
   }
-  .item-diff-days {
-    min-width: 4rem;
+  .day-diff {
+    text-align: right;
+    min-height: 4rem;
   }
   </style>
 </head>
@@ -70,34 +83,39 @@
             日
           </div>
           <div>
-            <a :href="'#item-' + this.today">
+            <a :href="'#day-' + this.today">
               今日まで移動する
             </a>
           </div>
         </section>
         <section>
-          <ul class="items">
-            <li
-              v-for="item in items"
-              class="item"
-              :class="{
-                'is-today': item.isToday
-              }"
-              :id="'item-' + item.date"
-            >
+          <div class="calendar">
+            <div class="month" v-for="(month, key) in calendar" :key="key">
+              <div class="w100">{{ month.str }}</div>
               <div
-                class="item-date"
-                :class="{
-                  'date-red': item.weekNumber === 0,
-                  'date-blue': item.weekNumber === 6,
-                }"
+                v-for="week in weeks"
+                :key="'month.key' + week"
+                class="day week"
               >
-                {{ item.str }}({{ item.weekStr }})
+                {{ week }}
               </div>
-              <div class="item-diff-days">{{ item.diffDays }}日</div>
-              <div class="item-diff-months">{{ item.diffMonths }}ヶ月</div>
-            </li>
-          </ul>
+              <div
+                v-for="day in month.days"
+                :key="day.date"
+                class="day"
+                :class="{
+                  'is-today': day.date === today
+                }"
+                :id="'day-' + day.date"
+              >
+                <div class="day-day">{{ day.day }}</div>
+                <div class="day-diff" v-if="items[day.date]">
+                  <p>{{ items[day.date].diffDays }}日</p>
+                  <p>{{ items[day.date].diffMonths }}月</p>
+                </div>
+              </div>
+            </div>
+          </div>
         </section>
       </div>
     </main>
@@ -138,14 +156,15 @@
           year: _moment.year(),
           month: _moment.month() + 1,
           day: _moment.date(),
-          date: _moment.format('YYYY-MM-DD')
+          date: _moment.format('YYYY-MM-DD'),
+          weeks: ['日', '月', '火', '水', '木', '金', '土']
         }
       },
       computed: {
         years () {
           var now = moment()
           var startYear = now.year() - 30
-          return [...Array(40)].map((_, i) => startYear + i)
+          return [...Array(31)].map((_, i) => startYear + i)
         },
         months () {
           return [...Array(12)].map((_, i) => i + 1)
@@ -153,25 +172,59 @@
         days () {
           return [...Array(31)].map((_, i) => i + 1)
         },
+        // 今年のカレンダー情報を作成
         items () {
-          var _baseDate = moment(this.date)
-          var _moment = moment(this.date)
-          var days = []
-          for (var i = 0; i < 365; i++) {
-            var e = Number(_moment.format('e'))
-            var date = _moment.format('YYYY-MM-DD')
-            days.push({
-              date: date,
-              str: _moment.format('YYYY年MM月DD日'),
+          var _today = moment()
+          var _selectedDate = moment(this.date)
+          var _date = moment(this.date)
+          var items = {}
+          var endDate = _today.clone()
+            .year(Number(_today.year()) + 3)
+            .month(12 - 1)
+            .date(31); // 3年後の年末まで
+          while (_date.isBefore(endDate)) {
+            var e = Number(_date.format('e'))
+            var dateStr = _date.format('YYYY-MM-DD')
+            items[dateStr] = {
+              date: dateStr,
+              str: _date.format('YYYY年MM月DD日'),
               weekNumber: e,
               weekStr: this.weekStr(e),
-              diffMonths: _moment.diff(_baseDate, 'months'),
-              diffDays: _moment.diff(_baseDate, 'days'),
-              isToday: date === this.today
-            })
-            _moment.add(1, 'days')
+              diffMonths: _date.diff(_selectedDate, 'months'),
+              diffDays: _date.diff(_selectedDate, 'days')
+            }
+            _date.add(1, 'days')
           }
-          return days
+          return items
+        },
+        // 今年分のカレンダー
+        calendar () {
+          const calendar = {}
+          var _date = moment()
+            .month(1 - 1)
+            .date(1); // 今年の元旦
+          for (var i = 0; i < 365; i++) {
+            var ym = _date.format('YYYY-MM')
+            var e = Number(_date.format('e'))
+            var dateStr = _date.format('YYYY-MM-DD')
+            if (calendar[ym] === undefined) {
+              calendar[ym] = {
+                str: _date.format('YYYY年 MM月'),
+                month: Number(_date.month() + 1),
+                days: [],
+              }
+            }
+            calendar[ym].days.push({
+              date: dateStr,
+              year: Number(_date.year()),
+              month: Number(_date.month() + 1),
+              day: Number(_date.date()),
+              weekNumber: e,
+              weekStr: this.weekStr(e)
+            })
+            _date.add(1, 'days')
+          }
+          return calendar
         }
       },
       methods: {
@@ -185,7 +238,7 @@
           }
         },
         weekStr (weekNumber) {
-          return ['日', '月', '火', '水', '木', '金', '土'][weekNumber]
+          return this.weeks[weekNumber]
         }
       }
     });
