@@ -9,7 +9,7 @@
   .header-container,
   .main-container,
   .footer-container {
-    width: 500px;
+    width: auto;
     max-width: 98%;
     margin: 0 auto;
   }
@@ -20,6 +20,7 @@
   .items .item {
     display: flex;
     flex-flow: row nowrap;
+    padding: 0.25rem;
   }
   .items .item:nth-child(odd) {
     background-color: #eeeeee;
@@ -68,6 +69,11 @@
             </select>
             日
           </div>
+          <div>
+            <a :href="'#item-' + this.today">
+              今日まで移動する
+            </a>
+          </div>
         </section>
         <section>
           <ul class="items">
@@ -75,8 +81,10 @@
               v-for="item in items"
               class="item"
               :class="{
-                'is-today': item.date === today
-              }">
+                'is-today': item.isToday
+              }"
+              :id="'item-' + item.date"
+            >
               <div
                 class="item-date"
                 :class="{
@@ -104,11 +112,27 @@
   <script src="https://cdn.jsdelivr.net/npm/moment@2.24.0/moment.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/vue"></script>
   <script>
+    var getUrlQueries = function () {
+      var queryStr = window.location.search.slice(1);
+      var queries = {};
+      if (!queryStr) return queries;
+      queryStr.split('&').forEach(function(queryStr) {
+        var queryArr = queryStr.split('=');
+        queries[queryArr[0]] = queryArr[1];
+      });
+      return queries;
+    };
+
     var app = new Vue({
       el: '#app',
       data() {
-        var date = localStorage.getItem('selectedDate')
-        var _moment = moment(date || undefined)
+        var queries = getUrlQueries()
+        var _moment = moment()
+        try {
+          if (queries.date && moment(queries.date).isValid()) {
+            _moment = moment(queries.date)
+          }
+        } catch  {}
         return  {
           today: moment().format('YYYY-MM-DD'),
           year: _moment.year(),
@@ -130,18 +154,20 @@
           return [...Array(31)].map((_, i) => i + 1)
         },
         items () {
-          var _date = moment(this.date)
+          var _baseDate = moment(this.date)
           var _moment = moment(this.date)
           var days = []
           for (var i = 0; i < 365; i++) {
             var e = Number(_moment.format('e'))
+            var date = _moment.format('YYYY-MM-DD')
             days.push({
-              date: _moment.format('YYYY-MM-DD'),
+              date: date,
               str: _moment.format('YYYY年MM月DD日'),
               weekNumber: e,
               weekStr: this.weekStr(e),
-              diffMonths: _moment.diff(_date, 'months'),
-              diffDays: _moment.diff(_date, 'days'),
+              diffMonths: _moment.diff(_baseDate, 'months'),
+              diffDays: _moment.diff(_baseDate, 'days'),
+              isToday: date === this.today
             })
             _moment.add(1, 'days')
           }
@@ -156,14 +182,13 @@
           if (this.day) _moment.date(this.day)
           if (_moment.isValid()) {
             this.date = _moment.format('YYYY-MM-DD')
-            localStorage.setItem('selectedDate', this.date)
           }
         },
         weekStr (weekNumber) {
           return ['日', '月', '火', '水', '木', '金', '土'][weekNumber]
         }
       }
-    })
+    });
   </script>
 </body>
 </html>
