@@ -31,15 +31,16 @@
   .days-wrapper {
     display: flex;
     flex-flow: row wrap;
-    max-width: 500px;
+    max-width: 510px;
     margin: 1rem;
   }
   .week {
     font-weight: bold;
+    background-color: #dddddd;
   }
   .day {
     width: calc(98% / 7);
-    border: 1px solid #eeeeee;
+    border: 1px solid #dddddd;
     text-align: center;
   }
   .day.is-today {
@@ -47,6 +48,7 @@
   }
   .day-day {
     border-bottom: 1px solid #eeeeee;
+    background-color: #eeeeee;
     font-weight: bold;
   }
   .day-diff {
@@ -116,7 +118,7 @@
                   <div class="day-day">{{ day.day }}</div>
                   <div class="day-diff" v-if="items[day.date]">
                     <p v-if="items[day.date]">{{ items[day.date].diffDays }}日</p>
-                    <p v-if="items[day.date]">{{ items[day.date].diffMonths }}ヶ月</p>
+                    <p v-if="items[day.date]" style="font-size:0.8rem;">{{ items[day.date].diffMonths }}ヶ月</p>
                   </div>
                   <div class="day-diff" v-else>&nbsp;</div>
                 </div>
