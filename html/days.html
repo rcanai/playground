@@ -28,7 +28,7 @@
     display: flex;
     flex-flow: row wrap;
   }
-  .month {
+  .days-wrapper {
     display: flex;
     flex-flow: row wrap;
     max-width: 500px;
@@ -91,27 +91,29 @@
         <section>
           <div class="calendar">
             <div class="month" v-for="(month, key) in calendar" :key="key">
-              <div class="w100">{{ month.str }}</div>
-              <div
-                v-for="week in weeks"
-                :key="'month.key' + week"
-                class="day week"
-              >
-                {{ week }}
-              </div>
-              <div
-                v-for="day in month.days"
-                :key="day.date"
-                class="day"
-                :class="{
-                  'is-today': day.date === today
-                }"
-                :id="'day-' + day.date"
-              >
-                <div class="day-day">{{ day.day }}</div>
-                <div class="day-diff" v-if="items[day.date]">
-                  <p>{{ items[day.date].diffDays }}日</p>
-                  <p>{{ items[day.date].diffMonths }}月</p>
+              <div class="days-wrapper">
+                <div class="w100">{{ month.str }}</div>
+                <div
+                  v-for="week in weeks"
+                  :key="'month.key' + week"
+                  class="day week"
+                >
+                  {{ week }}
+                </div>
+                <div
+                  v-for="day in month.days"
+                  :key="day.date"
+                  class="day"
+                  :class="{
+                    'is-today': day.date === today
+                  }"
+                  :id="'day-' + day.date"
+                >
+                  <div class="day-day">{{ day.day }}</div>
+                  <div class="day-diff" v-if="items[day.date]">
+                    <p>{{ items[day.date].diffDays }}日</p>
+                    <p>{{ items[day.date].diffMonths }}ヶ月</p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -239,7 +241,14 @@
         },
         weekStr (weekNumber) {
           return this.weeks[weekNumber]
+        },
+        setQuery () {
+          console.dir(window.history);
+          window.history.replaceState(null, null, '?date=' + this.date);
         }
+      },
+      watch: {
+        date: 'setQuery'
       }
     });
   </script>
