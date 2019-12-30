@@ -177,7 +177,7 @@
         years () {
           var now = moment()
           var startYear = now.year() - 30
-          return [...Array(31)].map((_, i) => startYear + i)
+          return [...Array(32)].map((_, i) => startYear + i)
         },
         months () {
           return [...Array(12)].map((_, i) => i + 1)
@@ -216,7 +216,8 @@
           var _date = moment()
             .month(1 - 1)
             .date(1); // 今年の元旦
-          for (var i = 0; i < 365; i++) {
+          const y2 = 365 * 2;
+          for (var i = 0; i < y2; i++) {
             var ym = _date.format('YYYY-MM')
             var e = Number(_date.format('e'))
             var dateStr = _date.format('YYYY-MM-DD')
