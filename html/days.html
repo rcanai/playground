@@ -239,6 +239,7 @@
         calendar () {
           const calendar = {}
           var _date = moment()
+            .year(Number(this.year))
             .month(Number(this.month) - 1)
             .date(1); // 選択月の1日
           const y2 = 365 * 2;
