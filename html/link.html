@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>リンク作成</title>
+  <style>
+  .header-container,
+  .main-container,
+  .footer-container {
+    width: auto;
+    max-width: 98%;
+    margin: 0 auto;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+  p {
+    margin: 0;
+  }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <header>
+      <h1>リンク作成</h1>
+    </header>
+    <main>
+      <section>
+        <div>
+          <div>
+            <input type="text" v-model="url">
+          </div>
+          <div>&nbsp;</div>
+          <div>
+            <a :href="url">このタブで開く</a>
+          </div>
+          <div>&nbsp;</div>
+          <div>
+            <a :href="url" target="_blank">新しいタブで開く</a>
+          </div>
+        </div>
+      </section>
+    </main>
+    <footer>
+      <small>&copy; rcanai</small>
+    </footer>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+  <script>
+    var app = new Vue({
+      el: '#app',
+      data() {
+        return {
+          url: 'https://example.com',
+        };
+      },
+    });
+  </script>
+</body>
+</html>
