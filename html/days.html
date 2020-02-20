@@ -10,15 +10,28 @@
   .main-container,
   .footer-container {
     width: auto;
-    max-width: 98%;
+    max-width: 100%;
     margin: 0 auto;
+    padding: 0.1rem;
   }
 
+  body {
+    margin: 0;
+  }
   * {
+    box-sizing: border-box;
+  }
+  *::after, *::before {
     box-sizing: border-box;
   }
   p {
     margin: 0;
+  }
+  h1, h2 {
+    margin: 0;
+  }
+  select {
+    font-size: 1.5rem;;
   }
   .w100 {
     min-width: 100%;
@@ -31,8 +44,7 @@
   .days-wrapper {
     display: flex;
     flex-flow: row wrap;
-    max-width: 510px;
-    margin: 1rem;
+    max-width: 600px;
   }
   .week {
     font-weight: bold;
@@ -44,7 +56,13 @@
     text-align: center;
   }
   .day.is-today {
-    border: 2px solid #cccc00;
+    border: 0.2rem solid #e4e41c !important;
+  }
+  .day.w-0 .day-day {
+    background-color: #d88eb8;
+  }
+  .day.w-6 .day-day {
+    background-color: #b3bcf3;
   }
   .day-day {
     border-bottom: 1px solid #eeeeee;
@@ -61,7 +79,7 @@
   <div id="app">
     <header>
       <div class="header-container">
-        <p>経過日数計算</p>
+        <h1>経過日数計算</h1>
       </div>
     </header>
     <main>
@@ -84,7 +102,7 @@
             </select>
             日
           </div>
-          <div>
+          <div style="margin:1rem 0;">
             <a :href="'#day-' + this.today">
               今日まで移動する
             </a>
@@ -94,7 +112,9 @@
           <div class="calendar">
             <div class="month" v-for="(month, key) in calendar" :key="key">
               <div class="days-wrapper">
-                <div class="w100">{{ month.str }}</div>
+                <div class="w100">
+                  <h2>{{ month.str }}</h2>
+                </div>
                 <div
                   v-for="week in weeks"
                   :key="'month.key' + week"
@@ -109,16 +129,20 @@
                 <div
                   v-for="day in month.days"
                   :key="day.date"
-                  class="day"
-                  :class="{
-                    'is-today': day.date === today
-                  }"
+                  :class="[
+                   'day',
+                   'w-' + day.weekNumber,
+                    {
+                      'is-today': day.date === today,
+                    }
+                  ]"
                   :id="'day-' + day.date"
                 >
                   <div class="day-day">{{ day.day }}</div>
                   <div class="day-diff" v-if="items[day.date]">
-                    <p v-if="items[day.date]">{{ items[day.date].diffDays }}日</p>
-                    <p v-if="items[day.date]" style="font-size:0.8rem;">{{ items[day.date].diffMonths }}ヶ月</p>
+                    <p v-if="items[day.date]" style="font-size:1.1rem;">{{ items[day.date].diffDays }}日</p>
+                    <p v-if="items[day.date]" style="font-size:0.8rem;color:#777;">({{ items[day.date].diffMonths }}ヶ月)</p>
+                    <p v-if="items[day.date]" style="font-size:0.8rem;color:#777;">({{ items[day.date].diffYears }}年)</p>
                   </div>
                   <div class="day-diff" v-else>&nbsp;</div>
                 </div>
@@ -177,7 +201,7 @@
         years () {
           var now = moment()
           var startYear = now.year() - 30
-          return [...Array(31)].map((_, i) => startYear + i)
+          return [...Array(32)].map((_, i) => startYear + i)
         },
         months () {
           return [...Array(12)].map((_, i) => i + 1)
@@ -203,6 +227,7 @@
               str: _date.format('YYYY年MM月DD日'),
               weekNumber: e,
               weekStr: this.weekStr(e),
+              diffYears: _date.diff(_selectedDate, 'years'),
               diffMonths: _date.diff(_selectedDate, 'months'),
               diffDays: _date.diff(_selectedDate, 'days')
             }
@@ -214,9 +239,11 @@
         calendar () {
           const calendar = {}
           var _date = moment()
-            .month(1 - 1)
-            .date(1); // 今年の元旦
-          for (var i = 0; i < 365; i++) {
+            .year(Number(this.year))
+            .month(Number(this.month) - 1)
+            .date(1); // 選択月の1日
+          const y2 = 365 * 2;
+          for (var i = 0; i < y2; i++) {
             var ym = _date.format('YYYY-MM')
             var e = Number(_date.format('e'))
             var dateStr = _date.format('YYYY-MM-DD')
