@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>animejs bubble</title>
+  <style>
+  :root {
+    --color-emo-pink: linear-gradient(45deg, #ff9a9e 0%, #fad0c4 99%, #fad0c4 100%);
+    --color-emo-green: linear-gradient(120deg, #d4fc79 0%, #96e6a1 100%);
+    --color-emo-blue: linear-gradient(120deg, #89f7fe 0%, #66a6ff 100%);
+    --color-emo-purple: linear-gradient(to top, #a18cd1 0%, #fbc2eb 100%);
+    --color-emo-yellow: linear-gradient(to top, #96fbc4 0%, #f9f586 100%);
+    --color-emo-orange: linear-gradient(120deg, #f6d365 0%, #fda085 100%);
+  }
+  * {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+  }
+  .bubble {
+    position: relative;
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: flex-start;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    font-size: size(15);
+    border: none;
+    border-radius: 50%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    padding: 0.5em;
+    color: var(--color-dark);
+  }
+  .bubble * {
+    color: inherit;
+  }
+  .bubble::-webkit-scrollbar {
+    display: none;
+  }
+  .bubble::before{
+    display:block;
+    content:"";
+    width: 1em;
+    height: 1em;
+    top: 1em;
+    left: 1em;
+    position: absolute;
+    background-color:#fff;
+    border-radius: 50%;
+    z-index: 2;
+    filter: blur(0.5em);
+  }
+
+  .bubble-list {
+    list-style: none;
+  }
+
+  .bubble-list-item {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 10vh;
+    height: 10vh;
+    opacity: 0;
+  }
+  </style>
+</head>
+<body>
+  <main>
+    <ul class="bubble-list">
+      <li class="bubble-list-item">
+        <div class="bubble" style="background-image: var(--color-emo-pink);"></div>
+      </li>
+      <li class="bubble-list-item">
+        <div class="bubble" style="background-image: var(--color-emo-green);"></div>
+      </li>
+      <li class="bubble-list-item">
+        <div class="bubble" style="background-image: var(--color-emo-blue);"></div>
+      </li>
+      <li class="bubble-list-item">
+        <div class="bubble" style="background-image: var(--color-emo-orange);"></div>
+      </li>
+      <li class="bubble-list-item">
+        <div class="bubble" style="background-image: var(--color-emo-pink);"></div>
+      </li>
+      <li class="bubble-list-item">
+        <div class="bubble" style="background-image: var(--color-emo-pink);"></div>
+      </li>
+      <li class="bubble-list-item">
+        <div class="bubble" style="background-image: var(--color-emo-purple);"></div>
+      </li>
+      <li class="bubble-list-item">
+        <div class="bubble" style="background-image: var(--color-emo-purple);"></div>
+      </li>
+      <li class="bubble-list-item">
+        <div class="bubble" style="background-image: var(--color-emo-orange);"></div>
+      </li>
+      <li class="bubble-list-item">
+        <div class="bubble" style="background-image: var(--color-emo-blue);"></div>
+      </li>
+    </ul>
+  </main>
+  <!-- animejs CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha512-z4OUqw38qNLpn1libAN9BsoDx6nbNFio5lA6CuTp9NlK83b89hgyCVq+N5FdBJptINztxn1Z3SaKSKUS5UP60Q==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script>
+  const randomSpeed = function() {
+    return anime.random(5000, 10000)
+  }
+
+  const getRandomInt = (max)  => {
+    return Math.floor(Math.random() * max)
+  }
+
+  window.onload = function() {
+    const maxWidth = window.innerWidth - 50
+    const maxHeight = window.innerHeight - 100
+
+    for (let i = 1; i <= 10; i++) {
+      const offset = getRandomInt(5000)
+      const target = `.bubble-list-item:nth-child(${i})`
+
+      // 初期位置設定
+      // MEMO: reactやvueの場合はDOMの作成時にstyleで設定する
+      anime({
+        targets: target,
+        easing: 'linear',
+        translateX: getRandomInt(maxWidth),
+        translateY: getRandomInt(maxHeight),
+        duration: 0,
+        delay: 0
+      })
+
+      // 移動
+      anime({
+        targets: target,
+        easing: 'linear',
+        translateX: [ getRandomInt(maxWidth), getRandomInt(maxWidth), getRandomInt(maxWidth) ],
+        translateY: [ getRandomInt(maxHeight), getRandomInt(maxHeight), getRandomInt(maxHeight) ],
+        opacity: [ 0.8, 0.9, 0 ],
+        scale: [1, 1.2, 1, 1.2, 1],
+        duration: randomSpeed,
+        delay: offset,
+        loop: true
+      })
+    }
+  }
+  </script>
+</body>
+</html>
